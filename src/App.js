@@ -13,6 +13,29 @@ const CommentImage = () => {
   const [hoveredMarkerIndex, setHoveredMarkerIndex] = useState(null);
 
   const [markerComments, setMarkerComments] = useState([]);
+  const loggedInUser = {
+    id: 1,
+    first_name: "asiya",
+    last_name: "batool",
+    email: "asiya.batool987@gmail.com",
+  };
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      setTimeout(() => {
+        textAreaRef.current.focus();
+      }, 0);
+    }
+  }, [selectedMarkerIndex]);
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImageURL(imageUrl);
+      setIsModalOpen(true);
+    }
+  };
 
   const handleImageClick = (e) => {
     const rect = e.target.getBoundingClientRect();
@@ -35,21 +58,15 @@ const CommentImage = () => {
     setMarkerComments([...filteredMarkerComments, ""]);
   };
 
-  useEffect(() => {
-    if (textAreaRef.current) {
-      setTimeout(() => {
-        textAreaRef.current.focus();
-      }, 0);
-    }
-  }, [selectedMarkerIndex]);
+  const handleRemoveMarker = (index) => {
+    const updatedMarkers = [...markers];
+    const updatedComments = [...markerComments];
+    updatedMarkers.splice(index, 1);
+    updatedComments.splice(index, 1);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setImageURL(imageUrl);
-      setIsModalOpen(true);
-    }
+    setMarkers(updatedMarkers);
+    setMarkerComments(updatedComments);
+    setSelectedMarkerIndex(null);
   };
 
   return (
@@ -109,23 +126,40 @@ const CommentImage = () => {
             </div>
           ))}
           {selectedMarkerIndex !== null && (
-            <textarea
-              ref={textAreaRef}
-              value={newComment}
-              onChange={(e) => {
-                const updatedComments = [...markerComments];
-                updatedComments[selectedMarkerIndex] = e.target.value;
-                setMarkerComments(updatedComments);
-                setNewComment(e.target.value);
-              }}
-              placeholder="Add a comment..."
+            <div
               style={{
                 position: "absolute",
                 left: markers[selectedMarkerIndex].x + 15,
-                top: markers[selectedMarkerIndex].y + 20,
+                top: markers[selectedMarkerIndex].y + 18,
+                background: "white",
+                padding: "20px 20px 0px",
+                borderRadius: "5px",
+                boxShadow: "2px 2px 2px rgba(0, 0, 0, 0.5)",
               }}
-              className="p-2 border rounded"
-            />
+            >
+              <button
+                onClick={() => handleRemoveMarker(selectedMarkerIndex)}
+                style={{
+                  position: "absolute",
+                  right: "5px",
+                  top: 0,
+                }}
+              >
+                &#10005;
+              </button>
+              <textarea
+                ref={textAreaRef}
+                value={newComment}
+                onChange={(e) => {
+                  const updatedComments = [...markerComments];
+                  updatedComments[selectedMarkerIndex] = e.target.value;
+                  setMarkerComments(updatedComments);
+                  setNewComment(e.target.value);
+                }}
+                placeholder="Add a comment..."
+                className="p-2 border rounded"
+              />
+            </div>
           )}
         </div>
       </CustomModal>
