@@ -48,23 +48,26 @@ const CommentImage = () => {
     setNewComment("");
 
     const filteredMarkers = markers.filter(
-      (_, index) => markerComments[index] !== ""
+      (_, index) => markerComments[index].length > 0
     );
 
     const filteredMarkerComments = markerComments.filter(
-      (comment) => comment !== ""
+      (comment) => comment.length > 0
     );
 
     setMarkers([...filteredMarkers, marker]);
     setSelectedMarkerIndex(filteredMarkers.length);
-    setMarkerComments([...filteredMarkerComments, ""]);
+    setMarkerComments([...filteredMarkerComments, []]);
   };
 
   const handleRemoveMarker = (index) => {
     const updatedMarkers = [...markers];
     const updatedComments = [...markerComments];
-    updatedMarkers.splice(index, 1);
-    updatedComments.splice(index, 1);
+
+    if (updatedComments[index] && updatedComments[index].length === 0) {
+      updatedMarkers.splice(index, 1);
+      updatedComments.splice(index, 1);
+    }
 
     setMarkers(updatedMarkers);
     setMarkerComments(updatedComments);
@@ -77,12 +80,31 @@ const CommentImage = () => {
     }
   };
 
-  const handleSaveCommentAndClose = () => {
-    const updatedComments = [...markerComments];
-    updatedComments[selectedMarkerIndex] = newComment;
-    setMarkerComments(updatedComments);
-  };
+  const handleSaveCommentAndClose = (index) => {
+    console.log(index, selectedMarkerIndex);
 
+    if (selectedMarkerIndex !== null) {
+      const updatedComments = [...markerComments];
+      const author = loggedInUser.first_name + " " + loggedInUser.last_name;
+      updatedComments[selectedMarkerIndex].push({
+        comment: newComment,
+        author,
+      });
+      setMarkerComments(updatedComments);
+      setNewComment("");
+    } else if (index !== null) {
+      console.log(index, "xw");
+      const updatedComments = [...markerComments];
+      const author = loggedInUser.first_name + " " + loggedInUser.last_name;
+      updatedComments[index].push({
+        comment: newComment,
+        author,
+      });
+      setMarkerComments(updatedComments);
+      setNewComment("");
+    }
+  };
+  // console.log
   const handleMarkerClick = (index) => {
     setMarkerClicked(index);
   };
@@ -135,20 +157,45 @@ const CommentImage = () => {
               <div>
                 {markerClicked === index ? (
                   <div className="bg-white p-2 border rounded shadow-md">
-                    <div className="text-black">{markerComments[index]}</div>
-                    <div className="text-gray-500">
-                      {loggedInUser.first_name} {loggedInUser.last_name}
-                    </div>
-
-                    {/* text area logic here.. */}
+                    {markerComments[index].map((commentData, commentIndex) => (
+                      <div key={commentIndex}>
+                        <div className="text-black">{commentData.comment}</div>
+                        <div className="text-gray-500">
+                          {commentData.author}
+                        </div>
+                      </div>
+                    ))}
+                    {/* mew code */}
+                    <textarea
+                      placeholder="Add a comment..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      className="p-2 border rounded"
+                    />
+                    <button
+                      className="flex border rounded px-2"
+                      onClick={() => {
+                        handleSaveCommentAndClose(index);
+                      }}
+                    >
+                      Submit
+                    </button>
                   </div>
                 ) : (
                   hoveredMarkerIndex === index && (
                     <div className="text-sm  bg-white p-2 border rounded shadow-md">
-                      <div className="text-black">{markerComments[index]}</div>
-                      <div className="text-gray-500">
-                        {loggedInUser.first_name} {loggedInUser.last_name}
-                      </div>
+                      {markerComments[index].map(
+                        (commentData, commentIndex) => (
+                          <div key={commentIndex}>
+                            <div className="text-black">
+                              {commentData.comment}
+                            </div>
+                            <div className="text-gray-500">
+                              {commentData.author}
+                            </div>
+                          </div>
+                        )
+                      )}
                     </div>
                   )
                 )}
@@ -157,7 +204,7 @@ const CommentImage = () => {
           ))}
           {selectedMarkerIndex !== null && (
             <div
-              className="absolute bg-white p-4 rounded shadow-md"
+              className="text-area-opened absolute bg-white p-4 rounded shadow-md"
               style={{
                 left: `${markers[selectedMarkerIndex].x + 15}px`,
                 top: `${markers[selectedMarkerIndex].y + 18}px`,
@@ -169,18 +216,31 @@ const CommentImage = () => {
               >
                 &#10005;
               </button>
+              <div>
+                {markerComments[selectedMarkerIndex] && (
+                  <div className="comments">
+                    {markerComments[selectedMarkerIndex].map(
+                      (commentData, commentIndex) => (
+                        <div key={commentIndex}>
+                          <div className="text-black">
+                            {commentData.comment}
+                          </div>
+                          <div className="text-gray-500">
+                            {commentData.author}
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
               <textarea
                 ref={textAreaRef}
                 value={newComment}
-                onChange={(e) => {
-                  const updatedComments = [...markerComments];
-                  updatedComments[selectedMarkerIndex] = e.target.value;
-                  setMarkerComments(updatedComments);
-                  setNewComment(e.target.value);
-                }}
+                onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Add a comment..."
                 className="p-2 border rounded"
-                onKeyDown={handleCommentEnter} // Add this event handler
+                onKeyDown={handleCommentEnter}
               />
               <button
                 className="flex border rounded px-2"
