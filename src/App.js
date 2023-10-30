@@ -81,8 +81,6 @@ const CommentImage = () => {
     const updatedComments = [...markerComments];
     updatedComments[selectedMarkerIndex] = newComment;
     setMarkerComments(updatedComments);
-
-    setSelectedMarkerIndex(null);
   };
 
   const handleMarkerClick = (index) => {
@@ -128,7 +126,7 @@ const CommentImage = () => {
               key={index}
               className={`absolute left-[${marker.x + 15}px] top-[${
                 marker.y + 20
-              }px] ${hoveredMarkerIndex === index ? "visible" : "visible"} `}
+              }px] `}
               style={{
                 left: `${marker.x + 15}px`,
                 top: `${marker.y + 20}px`,
