@@ -92,16 +92,11 @@ const CommentImage = () => {
           {markers.map((marker, index) => (
             <div
               key={index}
+              className="absolute w-4 h-4 bg-red-500 cursor-pointer shadow-lg"
               style={{
-                left: marker.x,
-                top: marker.y,
-                position: "absolute",
-                width: "20px",
-                height: "20px",
-                background: "red",
-                borderRadius: "48% 52% 0% 100% / 47% 46% 54% 53% ",
-                cursor: "pointer",
-                boxShadow: "2px 2px 2px rgba(0, 0, 0, 0.5)",
+                borderRadius: " 20px 20px 0px 20px",
+                left: `${marker.x}px`,
+                top: `${marker.y}px`,
               }}
               onMouseEnter={() => setHoveredMarkerIndex(index)}
               onMouseLeave={() => setHoveredMarkerIndex(null)}
@@ -110,16 +105,14 @@ const CommentImage = () => {
           {markers.map((marker, index) => (
             <div
               key={index}
+              className={`absolute left-[${marker.x + 15}px] top-[${
+                marker.y + 20
+              }px] ${
+                hoveredMarkerIndex === index ? "visible" : "hidden"
+              } bg-white p-2 border rounded shadow-md`}
               style={{
-                position: "absolute",
-                left: marker.x + 15,
-                top: marker.y + 20,
-                visibility: hoveredMarkerIndex === index ? "visible" : "hidden",
-                background: "white",
-                padding: "5px",
-                border: "1px solid gray",
-                borderRadius: "5px",
-                boxShadow: "2px 2px 2px rgba(0, 0, 0, 0.5)",
+                left: `${marker.x + 15}px`,
+                top: `${marker.y + 20}px`,
               }}
             >
               {markerComments[index]}
@@ -127,23 +120,15 @@ const CommentImage = () => {
           ))}
           {selectedMarkerIndex !== null && (
             <div
+              className="absolute bg-white p-4 rounded shadow-md"
               style={{
-                position: "absolute",
-                left: markers[selectedMarkerIndex].x + 15,
-                top: markers[selectedMarkerIndex].y + 18,
-                background: "white",
-                padding: "20px 20px 0px",
-                borderRadius: "5px",
-                boxShadow: "2px 2px 2px rgba(0, 0, 0, 0.5)",
+                left: `${markers[selectedMarkerIndex].x + 15}px`,
+                top: `${markers[selectedMarkerIndex].y + 18}px`,
               }}
             >
               <button
                 onClick={() => handleRemoveMarker(selectedMarkerIndex)}
-                style={{
-                  position: "absolute",
-                  right: "5px",
-                  top: 0,
-                }}
+                className="absolute top-0 right-0"
               >
                 &#10005;
               </button>
