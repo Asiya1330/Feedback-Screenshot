@@ -94,7 +94,7 @@ const CommentImage = () => {
               key={index}
               className="absolute w-4 h-4 bg-red-500 cursor-pointer shadow-lg"
               style={{
-                borderRadius: " 20px 20px 0px 20px",
+                borderRadius: "20px 20px 0px 20px",
                 left: `${marker.x}px`,
                 top: `${marker.y}px`,
               }}
