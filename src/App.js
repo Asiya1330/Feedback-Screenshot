@@ -11,6 +11,7 @@ const CommentImage = () => {
   const [markers, setMarkers] = useState([]);
   const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(null);
   const [hoveredMarkerIndex, setHoveredMarkerIndex] = useState(null);
+  const [markerClicked, setMarkerClicked] = useState(null);
 
   const [markerComments, setMarkerComments] = useState([]);
   const loggedInUser = {
@@ -38,6 +39,7 @@ const CommentImage = () => {
   };
 
   const handleImageClick = (e) => {
+    setMarkerClicked(null);
     const rect = e.target.getBoundingClientRect();
     const x = e.clientX - rect.left + 17;
     const y = e.clientY - rect.top + 17;
@@ -83,6 +85,10 @@ const CommentImage = () => {
     setSelectedMarkerIndex(null);
   };
 
+  const handleMarkerClick = (index) => {
+    setMarkerClicked(index);
+  };
+
   return (
     <div>
       <input
@@ -114,6 +120,7 @@ const CommentImage = () => {
               }}
               onMouseEnter={() => setHoveredMarkerIndex(index)}
               onMouseLeave={() => setHoveredMarkerIndex(null)}
+              onClick={() => handleMarkerClick(index)}
             />
           ))}
           {markers.map((marker, index) => (
@@ -121,20 +128,31 @@ const CommentImage = () => {
               key={index}
               className={`absolute left-[${marker.x + 15}px] top-[${
                 marker.y + 20
-              }px] ${
-                hoveredMarkerIndex === index ? "visible" : "hidden"
-              } bg-white p-2 border rounded shadow-md`}
+              }px] ${hoveredMarkerIndex === index ? "visible" : "visible"} `}
               style={{
                 left: `${marker.x + 15}px`,
                 top: `${marker.y + 20}px`,
               }}
             >
               <div>
-                {markerComments[index]}
-                {hoveredMarkerIndex === index && (
-                  <div className="text-sm text-gray-500">
-                    {loggedInUser.first_name} {loggedInUser.last_name}
+                {markerClicked === index ? (
+                  <div className="bg-white p-2 border rounded shadow-md">
+                    <div className="text-black">{markerComments[index]}</div>
+                    <div className="text-gray-500">
+                      {loggedInUser.first_name} {loggedInUser.last_name}
+                    </div>
+
+                    {/* text area logic here.. */}
                   </div>
+                ) : (
+                  hoveredMarkerIndex === index && (
+                    <div className="text-sm  bg-white p-2 border rounded shadow-md">
+                      <div className="text-black">{markerComments[index]}</div>
+                      <div className="text-gray-500">
+                        {loggedInUser.first_name} {loggedInUser.last_name}
+                      </div>
+                    </div>
+                  )
                 )}
               </div>
             </div>
