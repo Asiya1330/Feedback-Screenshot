@@ -69,6 +69,20 @@ const CommentImage = () => {
     setSelectedMarkerIndex(null);
   };
 
+  const handleCommentEnter = (e) => {
+    if (e.key === "Enter" && e.shiftKey === false) {
+      handleSaveCommentAndClose();
+    }
+  };
+
+  const handleSaveCommentAndClose = () => {
+    const updatedComments = [...markerComments];
+    updatedComments[selectedMarkerIndex] = newComment;
+    setMarkerComments(updatedComments);
+
+    setSelectedMarkerIndex(null);
+  };
+
   return (
     <div>
       <input
@@ -115,7 +129,14 @@ const CommentImage = () => {
                 top: `${marker.y + 20}px`,
               }}
             >
-              {markerComments[index]}
+              <div>
+                {markerComments[index]}
+                {hoveredMarkerIndex === index && (
+                  <div className="text-sm text-gray-500">
+                    {loggedInUser.first_name} {loggedInUser.last_name}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
           {selectedMarkerIndex !== null && (
@@ -143,7 +164,14 @@ const CommentImage = () => {
                 }}
                 placeholder="Add a comment..."
                 className="p-2 border rounded"
+                onKeyDown={handleCommentEnter} // Add this event handler
               />
+              <button
+                className="flex border rounded px-2"
+                onClick={handleSaveCommentAndClose}
+              >
+                Submit
+              </button>
             </div>
           )}
         </div>
