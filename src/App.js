@@ -104,13 +104,16 @@ const CommentImage = () => {
       setNewComment("");
     }
   };
-  // console.log
+
   const handleMarkerClick = (index) => {
     setMarkerClicked(index);
   };
 
   return (
     <div>
+      <h1 className="text-blue-400 mb-2 text-lg">
+        Logged In User: {loggedInUser.first_name + " " + loggedInUser.last_name}
+      </h1>
       <input
         ref={fileInputRef}
         type="file"
@@ -158,10 +161,10 @@ const CommentImage = () => {
                 {markerClicked === index ? (
                   <div className="bg-white p-2 border rounded shadow-md">
                     {markerComments[index].map((commentData, commentIndex) => (
-                      <div key={commentIndex}>
+                      <div key={commentIndex} className="border p-2">
                         <div className="text-black">{commentData.comment}</div>
-                        <div className="text-gray-500">
-                          {commentData.author}
+                        <div className="text-gray-500 text-sm">
+                          by {commentData.author}
                         </div>
                       </div>
                     ))}
