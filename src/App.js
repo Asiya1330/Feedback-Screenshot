@@ -72,6 +72,7 @@ const CommentImage = () => {
     setMarkers(updatedMarkers);
     setMarkerComments(updatedComments);
     setSelectedMarkerIndex(null);
+    setMarkerClicked(null);
   };
 
   const handleCommentEnter = (e) => {
@@ -81,24 +82,25 @@ const CommentImage = () => {
   };
 
   const handleSaveCommentAndClose = (index) => {
-    console.log(index, selectedMarkerIndex);
-
     if (selectedMarkerIndex !== null) {
       const updatedComments = [...markerComments];
       const author = loggedInUser.first_name + " " + loggedInUser.last_name;
+      const timestamp = new Date() // Add timestamp
       updatedComments[selectedMarkerIndex].push({
         comment: newComment,
         author,
+        timestamp, // Include the timestamp
       });
       setMarkerComments(updatedComments);
       setNewComment("");
     } else if (index !== null) {
-      console.log(index, "xw");
       const updatedComments = [...markerComments];
       const author = loggedInUser.first_name + " " + loggedInUser.last_name;
+      const timestamp = new Date(); // Add timestamp
       updatedComments[index].push({
         comment: newComment,
         author,
+        timestamp, // Include the timestamp
       });
       setMarkerComments(updatedComments);
       setNewComment("");
@@ -160,11 +162,19 @@ const CommentImage = () => {
               <div>
                 {markerClicked === index ? (
                   <div className="bg-white p-2 border rounded shadow-md">
+                    <div
+                      className="w-100 flex justify-center rounded-full bg-gray-200 text-gray-800 text-lg cursor-pointer"
+                      onClick={() => handleRemoveMarker(markerClicked)}
+                    >
+                      {" "}
+                      &#10005;
+                    </div>
                     {markerComments[index].map((commentData, commentIndex) => (
                       <div key={commentIndex} className="border p-2">
                         <div className="text-black">{commentData.comment}</div>
                         <div className="text-gray-500 text-sm">
-                          by {commentData.author}
+                          {commentData.author} - {(commentData.timestamp).toLocaleString()}{" "}
+                          {/* Display timestamp */}
                         </div>
                       </div>
                     ))}
@@ -194,7 +204,8 @@ const CommentImage = () => {
                               {commentData.comment}
                             </div>
                             <div className="text-gray-500">
-                              {commentData.author}
+                              {commentData.author} - {commentData.timestamp.toLocaleString()}{" "}
+                              {/* Display timestamp */}
                             </div>
                           </div>
                         )
@@ -229,7 +240,8 @@ const CommentImage = () => {
                             {commentData.comment}
                           </div>
                           <div className="text-gray-500">
-                            {commentData.author}
+                            {commentData.author} - {commentData.timestamp.toLocaleString()}{" "}
+                            {/* Display timestamp */}
                           </div>
                         </div>
                       )
