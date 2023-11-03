@@ -28,7 +28,7 @@ const CustomModal = ({ children, isOpen, onRequestClose }) => {
             }}
         >
           <div
-            className="modal relative w-11/12 md:w-2/3 lg:w-full max-w-screen-sm p-5 bg-white shadow-lg rounded-md"
+            className="modal relative w-11/12 md:w-2/3 lg:w-full max-w-screen-sm p-5 bg-white shadow-lg rounded-md h-[100vh] overflow-y-auto"
           >
             <button
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-600"
