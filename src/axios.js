@@ -13,7 +13,7 @@ export const createMarkerOnServer = async (
   yCoordinate
 ) => {
   try {
-    console.log(id, 'in acios')
+    console.log(id, "in acios");
     const response = await instance.post("/api/marker", {
       id,
       imageId,
@@ -61,6 +61,15 @@ export const deleteComment = async (id) => {
     return response.data;
   } catch (error) {
     console.error("Error saving image:", error);
-    throw error;
+    return error;
+  }
+};
+export const fetchAllUsers = async () => {
+  try {
+    const response = await instance.get(`/api/user`);
+    return response.data;
+  } catch (error) {
+    console.error("Error saving image:", error);
+    return error;
   }
 };

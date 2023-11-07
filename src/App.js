@@ -3,6 +3,7 @@ import CustomModal from "./CustomModal";
 import {
   createMarkerOnServer,
   deleteComment,
+  fetchAllUsers,
   saveComment,
   saveImageFromBase64,
 } from "./axios";
@@ -20,12 +21,18 @@ const CommentImage = () => {
   const [markerClicked, setMarkerClicked] = useState(null);
 
   const [markerComments, setMarkerComments] = useState([]);
-  const loggedInUser = {
-    id: 1,
-    first_name: "asiya",
-    last_name: "batool",
-    email: "asiya.batool987@gmail.com",
-  };
+  const [users, setUsers] = useState([]);
+  const [loggedInUser, setLoggedInUser] = useState({});
+  const [imageId, setImageId] = useState(null);
+
+  useEffect(() => {
+    const findAllUsers = async () => {
+      const users = await fetchAllUsers();
+      setLoggedInUser(users[0]);
+      setUsers(users);
+    };
+    findAllUsers();
+  }, []);
 
   const generateUniqueID = () => {
     // You can use a library like UUID or generate your own unique IDs.
@@ -47,6 +54,7 @@ const CommentImage = () => {
       reader.onload = async (event) => {
         const base64Image = event.target.result;
         const res = await saveImageFromBase64(base64Image);
+        setImageId(res.id);
         console.log("save image", res);
       };
       reader.readAsDataURL(file);
@@ -65,7 +73,7 @@ const CommentImage = () => {
     const marker = { x, y, id: generateUniqueID() };
 
     console.log(markers.length, "length");
-    const newMarker = await createMarkerOnServer(marker.id, 11, x, y);
+    const newMarker = await createMarkerOnServer(marker.id, imageId, x, y);
     console.log("New marker created:", newMarker);
 
     setNewComment("");
@@ -97,12 +105,16 @@ const CommentImage = () => {
 
   const handleSaveCommentAndClose = async (id) => {
     if (selectedMarkerID !== null) {
-      const rest = await saveComment(1, selectedMarkerID, newComment);
+      console.log(loggedInUser.id);
+      const rest = await saveComment(
+        loggedInUser.id,
+        selectedMarkerID,
+        newComment
+      );
       console.log("Comment saved:", rest);
 
-      const author = loggedInUser.first_name + " " + loggedInUser.last_name;
+      const author = loggedInUser.firstName + " " + loggedInUser.lastName;
       const timestamp = new Date();
-
       setMarkerComments([
         ...markerComments,
         {
@@ -114,10 +126,10 @@ const CommentImage = () => {
       ]);
       setNewComment("");
     } else if (id !== null) {
-      const rest = await saveComment(1, id, newComment);
+      const rest = await saveComment(loggedInUser.id, id, newComment);
       console.log("Comment saved:", rest);
 
-      const author = loggedInUser.first_name + " " + loggedInUser.last_name;
+      const author = loggedInUser.firstName + " " + loggedInUser.lastName;
       const timestamp = new Date();
 
       setMarkerComments([
@@ -138,20 +150,41 @@ const CommentImage = () => {
   };
 
   return (
-    <div>
+    <div className="m-auto max-w-[300px]">
       <h1 className="text-blue-400 mb-2 text-lg">
-        Logged In User: {loggedInUser.first_name + " " + loggedInUser.last_name}
+        Logged In User: {loggedInUser.firstName + " " + loggedInUser.lastName}
       </h1>
+      Select users
+      <div className="flex gap-2 mb-2">
+        {users.map((user) => (
+          <div className="border p-4">
+            <input
+              type="radio"
+              name="users"
+              checked={loggedInUser.id === user.id}
+              onChange={() => setLoggedInUser(user)}
+            />
+            <label htmlFor="">
+              {user.firstName} {user.lastName}
+            </label>
+             
+          </div>
+        ))}
+      </div>
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
         onChange={handleImageUpload}
       />
-
       <CustomModal
         isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
+        onRequestClose={() => {
+          setIsModalOpen(false);
+          setMarkerComments([]);
+          setMarkers([]);
+          fileInputRef.current.value = "";
+        }}
       >
         <div className="">
           <img
